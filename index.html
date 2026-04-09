@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lazy Vai Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --glass: rgba(255, 255, 255, 0.2);
+    --glass-heavy: rgba(255, 255, 255, 0.4);
+    --border: rgba(255, 255, 255, 0.3);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+  
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg,#e0eafc,#cfdef3);
+    color: #111;
+    overflow: hidden; /* Intro cholakalin scroll bondho */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* --- INTRO ANIMATION STYLE --- */
+  #intro-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg,#e0eafc,#cfdef3);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out;
+  }
+
+  #intro-name {
+    font-size: 2.5rem;
+    font-weight: 700;
+    position: absolute;
+    opacity: 0;
+    transform: translateY(0);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #intro-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 5px solid white;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    opacity: 0;
+    transform: scale(0.8);
+    object-fit: cover;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 20px;
+  }
+
+  /* --- MAIN CONTENT STYLE --- */
+  .container {
+    width: 92%;
+    max-width: 650px;
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    padding: 50px 20px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 1s ease;
+    margin: 40px auto;
+    position: relative;
+  }
+
+  /* Top Right Menu */
+  .menu-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+  }
+  .menu-btn {
+    background: var(--glass-heavy);
+    border: none;
+    padding: 10px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    backdrop-filter: blur(5px);
+    font-size: 0.9rem;
+    transition: 0.3s;
+  }
+  .menu-btn:hover { background: rgba(255,255,255,0.6); }
+
+  .dropdown {
+    display: none;
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    width: 160px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255,255,255,0.5);
+  }
+  .dropdown a {
+    display: block;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #333;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: left;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  .dropdown a:hover { background: white; color: #000; }
+
+  /* UI Elements */
+  .profile-header img { 
+    width: 120px; 
+    height: 120px; 
+    border-radius: 50%; 
+    border: 4px solid white; 
+    object-fit: cover;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  .profile-header h1 { margin-top: 15px; font-size: 2rem; letter-spacing: -0.5px; }
+  
+  .section { margin-top: 35px; }
+  .section h2 { font-size: 1.3rem; margin-bottom: 12px; color: #333; position: relative; display: inline-block; }
+  .section h2::after { content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%); width: 40px; height: 3px; background: #555; border-radius: 2px; }
+  
+  .what-i-do { font-weight: 800; font-size: 1.2rem; margin-top: 25px; color: #111; }
+  .what-i-do-desc { opacity: 0.8; font-size: 1rem; margin-top: 5px; }
+
+  /* Notice/Announcement System */
+  .notice-box {
+    background: rgba(255, 255, 255, 0.4);
+    border-left: 5px solid #007AFF;
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 15px;
+    text-align: left;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  }
+  .notice-box strong { display: block; margin-bottom: 5px; color: #007AFF; font-size: 0.9rem; text-transform: uppercase; }
+
+  /* Reels Buttons */
+  .btn-group { display: flex; justify-content: center; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
+  .glass-link {
+    background: white;
+    padding: 12px 28px;
+    border-radius: 18px;
+    text-decoration: none;
+    color: #111;
+    font-weight: 600;
+    transition: 0.3s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+  .glass-link:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+
+  /* Footer */
+  .contact-footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.05); font-size: 0.9rem; }
+  .contact-footer p { margin-bottom: 8px; }
+  .insta-link { color: #E1306C; text-decoration: none; font-weight: 700; transition: 0.2s; }
+  .insta-link:hover { opacity: 0.8; }
+
+  @media(max-width: 480px) {
+    #intro-name { font-size: 1.8rem; }
+    .container { padding: 40px 15px; width: 95%; }
+    .profile-header h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="intro-overlay">
+  <img src="https://i.postimg.cc/9MGW0Z7B/IMG-2320-(1).jpg" alt="Lazy Vai" id="intro-pic">
+  <div id="intro-name">Lazy Vai Hub</div>
+</div>
+
+<div class="container" id="main-content">
+  
+  <div class="menu-container">
+    <button class="menu-btn" onclick="toggleMenu(event)">Contact ▾</button>
+    <div class="dropdown" id="menuDropdown">
+      <a href="https://instagram.com/_lazy__vai__58" target="_blank">Instagram</a>
+      <a href="https://wa.me/YOUR_NUMBER" target="_blank">WhatsApp</a>
+      <a href="mailto:tanjimsarkartaj89@gmail.com">Gmail</a>
+    </div>
+  </div>
+
+  <div class="profile-header">
+    <img src="https://i.postimg.cc/9MGW0Z7B/IMG-2320-(1).jpg" alt="Lazy Vai">
+    <h1>Lazy Vai Hub</h1>
+  </div>
+
+  <div class="section">
+    <h2>About Me</h2>
+    <p style="margin-top: 10px; line-height: 1.6; opacity: 0.9;">
+      Hi, I'm Lazy Vai. I make reels sometimes and play games. I am the Social Media Manager of ICT & Photography Club at our college.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="what-i-do">What I Do</div>
+    <p class="what-i-do-desc">Reels Editing • Gaming • Creative Content • Club Management</p>
+  </div>
+
+  <div class="section">
+    <h2>Latest Reels</h2>
+    <div class="btn-group">
+      <a href="#" class="glass-link">Reel 1</a>
+      <a href="#" class="glass-link">Reel 2</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Announcements</h2>
+    <div class="notice-box">
+      <strong>📢 Official Notice:</strong>
+      <p>The ICT & Photography Club meeting is scheduled for next Sunday. All members are requested to join on time!</p>
+    </div>
+  </div>
+
+  <div class="contact-footer">
+    <p><strong>Contact Info:</strong></p>
+    <p>Gmail: <a href="mailto:tanjimsarkartaj89@gmail.com" style="text-decoration:none; color:inherit;">tanjimsarkartaj89@gmail.com</a></p>
+    <p>Instagram: <a href="https://instagram.com/_lazy__vai__58" target="_blank" class="insta-link">@_lazy__vai__58</a></p>
+  </div>
+
+</div>
+
+<script>
+  const introName = document.getElementById('intro-name');
+  const introPic = document.getElementById('intro-pic');
+  const introOverlay = document.getElementById('intro-overlay');
+  const mainContent = document.getElementById('main-content');
+
+  // Smooth Sequence Animation
+  window.onload = () => {
+    // 1. Name Appears in Center
+    setTimeout(() => {
+      introName.style.opacity = '1';
+    }, 600);
+
+    // 2. Name Moves Down and Pic Appears smoothly
+    setTimeout(() => {
+      introName.style.transform = 'translateY(110px)'; 
+      introPic.style.opacity = '1';
+      introPic.style.transform = 'scale(1)'; 
+    }, 1800);
+
+    // 3. Complete Transition to Site
+    setTimeout(() => {
+      introOverlay.style.opacity = '0';
+      introOverlay.style.visibility = 'hidden';
+      
+      document.body.style.overflow = 'auto'; // Enable scrolling
+      mainContent.style.opacity = '1';
+      mainContent.style.transform = 'translateY(0)';
+    }, 4200);
+  };
+
+  // Dropdown Menu Toggle
+  function toggleMenu(event) {
+    event.stopPropagation();
+    const menu = document.getElementById('menuDropdown');
+    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+  }
+
+  // Close menu when clicking outside
+  window.onclick = function(event) {
+    const menu = document.getElementById('menuDropdown');
+    if (!event.target.matches('.menu-btn')) {
+      menu.style.display = 'none';
+    }
+  }
+</script>
+
+</body>
+</html>
